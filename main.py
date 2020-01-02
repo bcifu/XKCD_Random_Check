@@ -37,7 +37,7 @@ for repeatCount in range(repeat):
     comicList.extend(range(1, numberOfComics + 1))
 random.shuffle(comicList)
 
-comicList = [1,2,3]
+comicList = [1,2,3] #for testing, remove me
 
 for comicNum in comicList:
     driver.get('https://xkcd.com/{}/'.format(comicNum))
