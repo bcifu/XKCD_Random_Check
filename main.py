@@ -37,17 +37,15 @@ for repeatCount in range(repeat):
     comicList.extend(range(1, numberOfComics + 1))
 random.shuffle(comicList)
 
-comicList = [1,2,3] #for testing, remove me
-
 for comicNum in comicList:
     driver.get('https://xkcd.com/{}/'.format(comicNum))
     driver.find_element_by_xpath('/html/body/div[2]/ul[1]/li[3]/a').click()
     newNumber = int(re.search(r'\d+', driver.current_url).group(0))
-    oldData = data.get(comicNum)
-    if oldData == None:
-        data[comicNum] = [newNumber]
+    #because this is a list, treat as such
+    if comicNum in data:
+        data[comicNum].append(newNumber)
     else:
-        data[comicNum] = oldData.append(newNumber) #error here
+        data[comicNum] = [newNumber]
 
 pickle.dump(data, open('newsave.pickle', 'wb'))
 if os.path.isfile('data.pickle'):
