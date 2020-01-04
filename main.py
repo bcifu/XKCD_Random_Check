@@ -8,7 +8,7 @@ from progress.bar import Bar
 
 parser = argparse.ArgumentParser(description= "get information on XKCD random for all comics a specefied number of times")
 parser.add_argument('--repeat_times', '-r', default=2)
-repeat = parser.parse_args().repeat_times
+repeat = int(parser.parse_args().repeat_times)
 
 #Load any past data
 if os.path.isfile('data.pickle'):
@@ -31,13 +31,20 @@ numberOfComics = int(re.search(r'\d+', permalink).group(0))
 #Due to some limitations of random this is not truly random but who cares
 #This isn't a scientific study, I'm just bored and programming
 comicList = []
+
+#remove 404s
+filter(lambda a: a =! 404, comicList)
+
 for repeatCount in range(repeat):
     comicList.extend(range(1, numberOfComics + 1))
 random.shuffle(comicList)
 
 for comicNum in Bar('Checking').iter(comicList):
-    driver.get('https://xkcd.com/{}/'.format(comicNum))
-    driver.find_element_by_xpath('/html/body/div[2]/ul[1]/li[3]/a').click()
+    try:
+        driver.get('https://xkcd.com/{}/'.format(comicNum))
+        driver.find_element_by_xpath('/html/body/div[2]/ul[1]/li[3]/a').click()
+    except:
+        continue
     newNumber = int(re.search(r'\d+', driver.current_url).group(0))
     #because this is a list, treat as such
     if comicNum in data:
@@ -52,3 +59,5 @@ if os.path.isfile('data.pickle'):
 os.rename('newsave.pickle', 'data.pickle')
 
 driver.close()
+
+#TODO: Mulithreading/multiwindow, save on quit or error with breaking, check wifi connection?
